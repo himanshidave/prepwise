@@ -1,24 +1,29 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { apiFetch } from '../api'
 import './Dashboard.css'
 
 /*
-  Dashboard - Displays preparation categories and tracks overall progress.
-  Demonstrates: useState, useEffect, dynamic inline styles, array mapping.
+  Dashboard - Displays preparation categories (from the backend) and tracks
+  overall progress. Demonstrates: useState, useEffect, dynamic inline styles,
+  array mapping, fetching from an API.
 */
+
+// Per-category visual accents, keyed by the backend category slug.
+const CATEGORY_STYLES = {
+  html: { icon: '🌐', color: '#e44d26' },
+  css: { icon: '🎨', color: '#264de4' },
+  javascript: { icon: '⚡', color: '#e8a914' },
+  react: { icon: '⚛️', color: '#00d8ff' },
+  dsa: { icon: '🧩', color: '#4caf50' },
+  hr: { icon: '💼', color: '#9c27b0' },
+}
+const DEFAULT_STYLE = { icon: '📚', color: '#6366f1' }
+
 function Dashboard() {
   const [completedCount, setCompletedCount] = useState(0)
   const [totalQuestions, setTotalQuestions] = useState(0)
-
-  // Curated categories definitions with distinct styling accents
-  const categories = [
-    { name: 'HTML', icon: '🌐', color: '#e44d26', count: 3 },
-    { name: 'CSS', icon: '🎨', color: '#264de4', count: 3 },
-    { name: 'JavaScript', icon: '⚡', color: '#e8a914', count: 3 },
-    { name: 'React', icon: '⚛️', color: '#00d8ff', count: 3 },
-    { name: 'DSA', icon: '🧩', color: '#4caf50', count: 3 },
-    { name: 'HR Questions', icon: '💼', color: '#9c27b0', count: 3 },
-  ]
+  const [categories, setCategories] = useState([])
 
   useEffect(() => {
     // 1. Fetch completed count from localStorage
@@ -28,19 +33,23 @@ function Dashboard() {
       setCompletedCount(completedList.length)
     }
 
-    // 2. Fetch the questions database to find the total count
-    async function loadTotal() {
+    // 2. Fetch categories (with question counts) from the backend
+    async function loadCategories() {
       try {
-        const response = await fetch('/questions.json')
-        if (response.ok) {
-          const data = await response.json()
-          setTotalQuestions(data.length)
-        }
+        const data = await apiFetch('/api/categories')
+        const cats = data.categories.map((c) => ({
+          name: c.name,
+          slug: c.slug,
+          count: c.question_count,
+          ...(CATEGORY_STYLES[c.slug] || DEFAULT_STYLE),
+        }))
+        setCategories(cats)
+        setTotalQuestions(cats.reduce((sum, c) => sum + c.count, 0))
       } catch (err) {
-        console.error('Failed to load total questions count', err)
+        console.error('Failed to load categories', err)
       }
     }
-    loadTotal()
+    loadCategories()
   }, [])
 
   const totalPercent = totalQuestions > 0 ? Math.round((completedCount / totalQuestions) * 100) : 0
@@ -83,9 +92,9 @@ function Dashboard() {
         <div className="categories-grid">
           {categories.map((cat) => {
             return (
-              <Link 
-                to={`/questions/${cat.name.toLowerCase()}`}
-                key={cat.name}
+              <Link
+                to={`/questions/${cat.slug}`}
+                key={cat.slug}
                 className="category-card"
                 style={{ borderTop: `4px solid ${cat.color}` }}
               >

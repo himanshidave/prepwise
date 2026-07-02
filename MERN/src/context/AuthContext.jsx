@@ -9,38 +9,47 @@ const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
+  const [token, setToken] = useState(null)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
 
   // Check localStorage when app loads (user was logged in before)
   useEffect(() => {
     try {
       const savedUser = localStorage.getItem('prepwiseUser')
-      if (savedUser) {
+      const savedToken = localStorage.getItem('prepwiseToken')
+      if (savedUser && savedToken) {
         setUser(JSON.parse(savedUser))
+        setToken(savedToken)
         setIsLoggedIn(true)
       }
     } catch (error) {
       console.error('Error parsing saved user from localStorage:', error)
       localStorage.removeItem('prepwiseUser')
+      localStorage.removeItem('prepwiseToken')
     }
   }, [])
 
-  // Login function - saves user to state and localStorage
-  function login(userData) {
+  // Login - persists the backend-issued JWT + user profile
+  function login({ token: authToken, user: userData }) {
     setUser(userData)
+    setToken(authToken)
     setIsLoggedIn(true)
     localStorage.setItem('prepwiseUser', JSON.stringify(userData))
+    localStorage.setItem('prepwiseToken', authToken)
   }
 
   // Logout function - clears everything
   function logout() {
     setUser(null)
+    setToken(null)
     setIsLoggedIn(false)
     localStorage.removeItem('prepwiseUser')
+    localStorage.removeItem('prepwiseToken')
   }
 
   const value = {
     user,
+    token,
     isLoggedIn,
     login,
     logout,

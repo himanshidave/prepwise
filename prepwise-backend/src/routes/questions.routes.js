@@ -29,8 +29,9 @@ router.get("/", async (req, res, next) => {
     const limitClause = limit && /^\d+$/.test(limit) ? `LIMIT ${Number(limit)}` : "";
 
     const { rows } = await query(
-      `SELECT q.id, q.question, q.answer, q.difficulty, q.category_id,
-              c.name AS category_name, c.slug AS category_slug
+      `SELECT q.id, q.question, q.answer, q.options,
+              q.correct_option AS "correctOption", q.difficulty, q.category_id,
+              c.name AS category, c.name AS category_name, c.slug AS category_slug
        FROM questions q
        JOIN categories c ON c.id = q.category_id
        ${whereClause}
@@ -49,8 +50,9 @@ router.get("/", async (req, res, next) => {
 router.get("/:id", async (req, res, next) => {
   try {
     const { rows } = await query(
-      `SELECT q.id, q.question, q.answer, q.difficulty, q.category_id,
-              c.name AS category_name, c.slug AS category_slug
+      `SELECT q.id, q.question, q.answer, q.options,
+              q.correct_option AS "correctOption", q.difficulty, q.category_id,
+              c.name AS category, c.name AS category_name, c.slug AS category_slug
        FROM questions q
        JOIN categories c ON c.id = q.category_id
        WHERE q.id = $1`,

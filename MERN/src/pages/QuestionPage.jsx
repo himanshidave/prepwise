@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import { apiFetch } from '../api'
 import './QuestionPage.css'
 
 /*
@@ -21,17 +22,9 @@ function QuestionPage() {
       try {
         setLoading(true)
         setError('')
-        const response = await fetch('/questions.json')
-        if (!response.ok) {
-          throw new Error('Failed to load questions database')
-        }
-        const data = await response.json()
-        
-        // Filter questions by category (case-insensitive)
-        const filtered = data.filter(
-          (q) => q.category.toLowerCase() === category.toLowerCase()
-        )
-        setQuestions(filtered)
+        // Backend filters by category slug (from the URL param)
+        const data = await apiFetch(`/api/questions?category=${encodeURIComponent(category)}`)
+        setQuestions(data.questions)
         setCurrentIndex(0) // Reset to first question
         setRevealAnswer(false) // Hide answer initially
       } catch (err) {
@@ -117,7 +110,7 @@ function QuestionPage() {
         
         {/* Progress Section */}
         <div className="question-header">
-          <h1>{category.toUpperCase()} Preparation</h1>
+          <h1>{(currentQuestion?.category || category).toUpperCase()} Preparation</h1>
           <div className="category-progress-section">
             <div className="progress-text">
               <span>{completedInCat} of {totalInCat} completed</span>

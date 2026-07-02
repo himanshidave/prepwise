@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
+import { apiFetch } from '../api'
 import './MockInterview.css'
 
 /*
@@ -24,12 +25,9 @@ function MockInterview() {
     async function loadQuestions() {
       try {
         setLoading(true)
-        const response = await fetch('/questions.json')
-        if (!response.ok) {
-          throw new Error('Failed to load questions database')
-        }
-        const data = await response.json()
-        setQuestions(data)
+        // Pull the full MCQ question bank from the backend
+        const data = await apiFetch('/api/questions')
+        setQuestions(data.questions)
       } catch (err) {
         setError('Error loading interview database. Please try again.')
       } finally {
