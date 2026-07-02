@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: prepwise-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: prepwise
+      POSTGRES_PASSWORD: prepwise_pass
+      POSTGRES_DB: prepwise_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - prepwise_pgdata:/var/lib/postgresql/data
+      # Runs automatically on first container start (creates + seeds tables)
+      - ./src/db/schema.sql:/docker-entrypoint-initdb.d/1-schema.sql
+      - ./src/db/seed.sql:/docker-entrypoint-initdb.d/2-seed.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U prepwise -d prepwise_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: .
+    container_name: prepwise-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PORT: 5000
+      DATABASE_URL: postgres://prepwise:prepwise_pass@postgres:5432/prepwise_db
+      JWT_SECRET: change_this_dev_secret
+      JWT_EXPIRES_IN: 7d
+      CORS_ORIGIN: http://localhost:5173
+    ports:
+      - "5000:5000"
+
+volumes:
+  prepwise_pgdata:

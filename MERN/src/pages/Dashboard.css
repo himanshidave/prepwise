@@ -1,0 +1,200 @@
+/* ========== DASHBOARD STYLES ========== */
+
+.dashboard-page {
+  padding: 40px 20px;
+  background-color: #f5f7fa;
+  min-height: calc(100vh - 128px);
+}
+
+.dashboard-container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* Progress Tracker summary card */
+.progress-summary-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 32px;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(118, 75, 162, 0.2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.summary-left {
+  flex: 1;
+  padding-right: 20px;
+}
+
+.summary-left h2 {
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.summary-left p {
+  opacity: 0.9;
+  font-size: 15px;
+  margin-bottom: 20px;
+}
+
+.summary-stats {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.stat-number {
+  font-size: 32px;
+  font-weight: 800;
+}
+
+.stat-label {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.summary-progress-bar-container {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.summary-progress-bar-fill {
+  height: 100%;
+  background: #ffe066;
+  border-radius: 3px;
+  transition: width 0.3s ease-in-out;
+}
+
+.summary-right {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.progress-badge-wrapper {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.progress-badge-number {
+  font-size: 28px;
+  font-weight: 800;
+  color: #ffe066;
+}
+
+.progress-badge-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+  opacity: 0.9;
+}
+
+/* Study Categories layout */
+.dash-heading {
+  font-size: 26px;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.dash-subheading {
+  color: #666;
+  font-size: 15px;
+  margin-bottom: 30px;
+}
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.category-card {
+  background: white;
+  padding: 28px;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s, box-shadow 0.2s;
+  text-decoration: none;
+}
+
+.category-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.cat-icon-wrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  margin-bottom: 16px;
+}
+
+.category-card h3 {
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 6px;
+}
+
+.cat-q-count {
+  font-size: 14px;
+  color: #718096;
+  margin-bottom: 20px;
+}
+
+.cat-action-text {
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: auto;
+}
+
+/* Responsive queries */
+@media (max-width: 900px) {
+  .categories-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .progress-summary-card {
+    flex-direction: column;
+    text-align: center;
+    padding: 24px;
+  }
+  .summary-left {
+    padding-right: 0;
+    margin-bottom: 24px;
+  }
+  .summary-stats {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 600px) {
+  .categories-grid {
+    grid-template-columns: 1fr;
+  }
+  .dash-heading {
+    font-size: 22px;
+  }
+}

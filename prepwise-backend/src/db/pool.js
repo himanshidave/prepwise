@@ -1,0 +1,18 @@
+import pg from "pg";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const { Pool } = pg;
+
+export const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
+
+pool.on("error", (err) => {
+  console.error("Unexpected PostgreSQL error on idle client", err);
+  process.exit(1);
+});
+
+// Small helper so route files can just do `query(text, params)`
+export const query = (text, params) => pool.query(text, params);

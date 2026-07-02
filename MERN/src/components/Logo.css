@@ -1,0 +1,33 @@
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-img {
+  display: block;
+  object-fit: contain;
+}
+
+/* Small — Navbar */
+.logo-small .logo-img {
+  height: 44px;
+  width: auto;
+}
+
+/* Large — Login page */
+.logo-large {
+  justify-content: center;
+}
+
+.logo-large .logo-img {
+  height: 180px;
+  width: auto;
+  max-width: 100%;
+}
+
+.logo-text {
+  font-size: 20px;
+  font-weight: 700;
+  color: #333;
+}
