@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { apiFetch } from '../api'
 import Logo from '../components/Logo'
 import './Login.css'
 
@@ -33,27 +34,18 @@ function Login() {
     setLoading(true)
 
     try {
-      // async/await + fetch to load users from JSON file
-      const response = await fetch('/users.json')
-      const users = await response.json()
+      // Authenticate against the backend API (returns { token, user })
+      const data = await apiFetch('/api/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ email: email.trim(), password }),
+      })
 
-      // Find user with matching email and password
-      const foundUser = users.find(
-        (user) => user.email === email && user.password === password
-      )
-
-      if (foundUser) {
-        // Login successful - save user (without password)
-        login({
-          email: foundUser.email,
-          name: foundUser.name,
-        })
-        navigate('/') // Go to Home page
-      } else {
-        setError('Invalid email or password. Try demo@prepwise.com / demo123')
-      }
+      // Login successful - persist the JWT + user profile
+      login({ token: data.token, user: data.user })
+      navigate('/') // Go to Home page
     } catch (err) {
-      setError('Something went wrong. Please try again.')
+      // Backend sends a friendly message (e.g. "Invalid email or password")
+      setError(err.message || 'Something went wrong. Please try again.')
     } finally {
       setLoading(false)
     }

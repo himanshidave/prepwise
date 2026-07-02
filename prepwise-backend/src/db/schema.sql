@@ -21,15 +21,21 @@ CREATE TABLE IF NOT EXISTS categories (
     created_at  TIMESTAMPTZ  NOT NULL DEFAULT now()
 );
 
--- 3. Questions (Day 7-8: Question page, Q&A)
+-- 3. Questions (Day 7-8: Question page, Q&A + Day 9-10: Mock interview MCQs)
 CREATE TABLE IF NOT EXISTS questions (
-    id           SERIAL PRIMARY KEY,
-    category_id  INTEGER NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
-    question     TEXT    NOT NULL,
-    answer       TEXT    NOT NULL,
-    difficulty   VARCHAR(20) NOT NULL DEFAULT 'easy' CHECK (difficulty IN ('easy', 'medium', 'hard')),
-    created_at   TIMESTAMPTZ NOT NULL DEFAULT now()
+    id             SERIAL PRIMARY KEY,
+    category_id    INTEGER NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
+    question       TEXT    NOT NULL,
+    answer         TEXT    NOT NULL,
+    options        JSONB   NOT NULL DEFAULT '[]',   -- MCQ choices (array of strings)
+    correct_option INTEGER,                          -- zero-based index into options
+    difficulty     VARCHAR(20) NOT NULL DEFAULT 'easy' CHECK (difficulty IN ('easy', 'medium', 'hard')),
+    created_at     TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+-- Backfill the MCQ columns if an older questions table already exists.
+ALTER TABLE questions ADD COLUMN IF NOT EXISTS options        JSONB NOT NULL DEFAULT '[]';
+ALTER TABLE questions ADD COLUMN IF NOT EXISTS correct_option INTEGER;
 
 -- 4. Interview sessions (Day 9-10: Mock interview - timer, random Qs, score)
 CREATE TABLE IF NOT EXISTS interview_sessions (
